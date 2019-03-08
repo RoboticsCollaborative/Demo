@@ -1,5 +1,5 @@
-#ifndef RDDA_INTERFACE_H
-#define RDDA_INTERFACE_H
+#ifndef RDDA_NODE_H
+#define RDDA_NODE_H
 
 /* C++ headers */
 #include <pthread.h>
@@ -7,6 +7,8 @@
 /* ROS headers */
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
+#include "rdda/JointCommands.h"
+#include "rdda/JointStates.h"
 
 /* C headers */
 extern "C" {
@@ -24,14 +26,14 @@ class RDDNode {
 
  private:
     ros::NodeHandle nh_;
-    ros::Subscriber target_position_sub;
-    ros::Publisher actual_position_pub;
+    ros::Subscriber rdda_joint_sub;
+    ros::Publisher rdda_joint_pub;
 
     shared_in_t *shared_in;
     shared_out_t *shared_out;
 
-    void publishJointState();
-    void setPositionCallback(const std_msgs::Float64ConstPtr& msg);
+    void pubJointStates();
+    void subJointCommands_callback(const rdda::JointCommands::ConstPtr& msg);
 };
 
-#endif /* RDDA_INTERFACE_H */
+#endif /* RDDA_NODE */

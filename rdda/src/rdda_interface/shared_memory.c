@@ -76,18 +76,27 @@ int ticket_unlock(ticket_lock_t *ticket) {
 	return mutex_unlock(&ticket->mutex);	
 }
 
-/** Initialise ticket mutex lock.
+/** Initialise ticket mutex lock and condition variable.
  * 
  * @param[in] ticket	=	ticket lock. 
  * return 1 on success.
  */
 int ticket_init(ticket_lock_t *ticket) {
+	/* Initialise mutex */
 	pthread_mutexattr_t mattr;
 	pthread_mutexattr_init(&mattr);
 	pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
 	pthread_mutexattr_setrobust(&mattr, PTHREAD_MUTEX_ROBUST);
-
 	pthread_mutex_init(&ticket->mutex, &mattr);
+	pthread_mutexattr_destroy(&mattr);
+
+	/* Initialise condition variable */
+	pthread_condattr_t cattr;
+	pthread_condattr_init(&cattr);
+	pthread_condattr_setpshared(&cattr, PTHREAD_PROCESS_SHARED);
+	pthread_cond_init(&ticket->cond, &cattr);
+	pthread_condattr_destroy(&cattr);
+
 	return 1;
 }
 
